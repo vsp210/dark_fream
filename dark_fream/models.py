@@ -97,16 +97,18 @@ class Model(metaclass=ModelMeta):
     def get_values(self):
         return [getattr(self, field_name) for field_name, _ in self._fields.items()]
 
-    def create_table(self):
-        conn = self.get_db_connection()
+    @classmethod
+    def create_table(cls):
+        conn = cls.get_db_connection()
         cursor = conn.cursor()
-        cursor.execute(self.get_create_table_sql())
+        cursor.execute(cls.get_create_table_sql())
         conn.commit()
         conn.close()
 
-    def get_create_table_sql(self):
-        fields = [(field_name, field_type.field_type) for field_name, field_type in self._fields.items()]
-        table_name = f'[{self.__class__.__name__}]'
+    @classmethod
+    def get_create_table_sql(cls):
+        fields = [(field_name, field_type.field_type) for field_name, field_type in cls._fields.items()]
+        table_name = f'[{cls.__name__}]'
         sql = f'CREATE TABLE IF NOT EXISTS {table_name} ('
         sql += ', '.join(f'{field_name} {field_type}' for field_name, field_type in fields)
         sql += ')'

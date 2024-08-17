@@ -38,7 +38,7 @@ cd dark_fream
 ~~~
 - затем запустите проект командой:
 ~~~bash
-python -m fream.app
+python -m dark_fream.app
 ~~~
 ### Контакты
 - **ВКонтакте**: https://vk.com/vsp210
@@ -68,9 +68,11 @@ from dark_fream.template import render
 
 # ваш код
 def home(request):
-    user = User.create_table(user='vsp210', password='1234', phone='8 888 888 88 88')
+    User.create_table()
+    user = User(user='vsp210', password='1234', phone='8 888 888 88 88')
     user.save()
     return render(request, 'home.html')
+
 ~~~
 
 - dark_fream/app/urls.py:

@@ -32,6 +32,10 @@ source venv/Scripts/activate
 ~~~bash
 pip install -r requirements.txt
 ~~~
+- перейдите в папку:
+~~~bash
+cd dark_fream
+~~~
 - затем запустите проект командой:
 ~~~bash
 python -m fream.app
@@ -42,3 +46,60 @@ python -m fream.app
 - **Электронная почта**: vsp210@gmail.com
 
 ### dark_fream - Мой собственный фреймворк основаный на всеми известном Django с открытым исходным кодом
+
+### Пример использования:
+
+- dark_fream/app/models.py:
+~~~python
+from dark_fream.models import *
+
+
+# ваша модель
+class User(Model):
+    user = CharField()
+    password = CharField()
+    phone = CharField()
+~~~
+
+- dark_fream/app/views.py:
+~~~python
+from .models import *
+from dark_fream.template import render
+
+# ваш код
+def home(request):
+    user = User.create_table(user='vsp210', password='1234', phone='8 888 888 88 88')
+    user.save()
+    return render(request, 'home.html')
+~~~
+
+- dark_fream/app/urls.py:
+~~~python
+from .views import *
+from dark_fream.urls import path
+
+urlpatterns = [
+    # ваши urls
+    path('', home, name='home'),
+]
+~~~
+- dark_fream/templates/home.html:
+~~~html
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Home</title>
+    </head>
+    <body>
+        <h1>Home</h1>
+    </body>
+</html>
+~~~
+
+### Пояснение:
+В этом примере мы создали базовую структуру приложения DarkFream с базой данных и моделью User
+Мы также добавили функцию home в views.py, которая создает нового пользователя и сохраняет его после каждой перезагрузки
+В urls.py мы добавили url для функции home
+В home.html мы добавили простую HTML-страницу с заголовком "Home"
+
+##### Версия 1

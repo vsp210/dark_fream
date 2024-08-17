@@ -1,0 +1,63 @@
+<!-- 404.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>404 Error - Page Not Found</title>
+    <meta charset="UTF-8">
+    <!-- <style>/* style.css */
+
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .lang-switcher {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        .lang-switcher-btn {
+            background-color: #4CAF50;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .lang-switcher-btn:hover {
+            background-color: #3e8e41;
+        }</style> -->
+</head>
+<body>
+    <div class="lang-switcher">
+        <button id="lang-switcher-btn">Перевести</button>
+    </div>
+
+    <h1 id="error-title">404 Error - Page Not Found</h1>
+    <p id="error-message">Sorry, the requested page does not exist. Please check the address and try again.</p>
+
+    <script>// script.js
+
+        const langSwitcherBtn = document.getElementById('lang-switcher-btn');
+        const errorTitle = document.getElementById('error-title');
+        const errorMessage = document.getElementById('error-message');
+
+        let lang = 'en';
+
+        langSwitcherBtn.addEventListener('click', () => {
+            if (lang === 'en') {
+                lang = 'ru';
+                langSwitcherBtn.textContent = 'Перевести';
+                errorTitle.textContent = 'Ошибка 404 - страница не найдена';
+                errorMessage.textContent = 'К сожалению, запрашиваемая страница не существует. Пожалуйста, проверьте адрес и повторите запрос.';
+            } else {
+                lang = 'en';
+                langSwitcherBtn.textContent = 'Translate';
+                errorTitle.textContent = '404 Error - Page Not Found';
+                errorMessage.textContent = 'Sorry, the requested page does not exist. Please check the address and try again.';
+            }
+        });</script>
+</body>
+</html>

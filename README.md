@@ -38,7 +38,7 @@ cd dark_fream
 ~~~
 - затем запустите проект командой:
 ~~~bash
-python -m fream.app
+python -m dark_fream.app
 ~~~
 ### Контакты
 - **ВКонтакте**: https://vk.com/vsp210

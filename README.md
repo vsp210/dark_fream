@@ -36,9 +36,14 @@ pip install -r requirements.txt
 ~~~bash
 cd dark_fream
 ~~~
+- затем создайте приложение командой:
+~~~bash
+python -m dark_fream.app createapp **
+~~~
+где * - любое название
 - затем запустите проект командой:
 ~~~bash
-python -m dark_fream.app
+python -m dark_fream.app runserver
 ~~~
 ### Контакты
 - **ВКонтакте**: https://vk.com/vsp210
@@ -104,4 +109,4 @@ urlpatterns = [
 В urls.py мы добавили url для функции home
 В home.html мы добавили простую HTML-страницу с заголовком "Home"
 
-##### Версия 1
+##### Версия 2

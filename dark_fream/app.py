@@ -90,6 +90,13 @@ MESSAGES = True
 APPS = [
     '{app_name}',
 ]""")
+        with open(f'settings/urls.py', 'w', encoding='utf8') as f:
+            f.write("""from dark_fream.urls import path, include
+
+urlpatterns = [
+    # ваши urls
+]
+""")
 
     with open(f'{app_name}/views.py', 'w', encoding='utf8') as f:
         f.write("""from .models import *
@@ -98,14 +105,7 @@ from dark_fream.template import render
 # ваш код
 
 """)
-    with open(f'{app_name}/urls.py', 'w', encoding='utf8') as f:
-        f.write("""from .views import *
-from dark_fream.urls import path
 
-urlpatterns = [
-    # ваши urls
-]
-""")
     with open(f'{app_name}/models.py', 'w', encoding='utf8') as f:
         f.write("""from dark_fream.models import *
 

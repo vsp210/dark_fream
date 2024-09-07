@@ -12,7 +12,6 @@ dark_fream - это фреймворк который позволяет соз�
 - **TextField**
 - **IntegerField**
 - **ImageField** (работает запись но получить данные из бд крайне сложно сможете исправить пишите контакты ниже)
-- и т. д.
 
 + **Работа с шаблонами** - Работа с шаблонами похожая с Django например:
 - **render** (рендерит шаблон)
@@ -20,6 +19,7 @@ dark_fream - это фреймворк который позволяет соз�
 
 + **Работа с url** - тут всё также как и в джанго например:
 - **path** (создает url)
+- **include** (включает url из другого файла)
 
 ### Запуск проекта
 
@@ -62,7 +62,7 @@ python -m dark_fream.app runserver <adress> <port>
 
 ### Пример использования:
 
-- dark_fream/app/models.py:
+- dark_fream/**/models.py:
 ~~~python
 from dark_fream.models import *
 
@@ -74,7 +74,7 @@ class User(Model):
     phone = CharField()
 ~~~
 
-- dark_fream/app/views.py:
+- dark_fream/**/views.py:
 ~~~python
 from .models import *
 from dark_fream.template import render
@@ -88,7 +88,16 @@ def home(request):
 
 ~~~
 
-- dark_fream/app/urls.py:
+- dark_fream/settings/urls.py:
+~~~python
+from dark_fream.urls import path, include
+
+urlpatterns = [
+    # ваши urls
+    path('', include('**.urls')),
+]
+~~~
+- dark_fream/**/urls.py:
 ~~~python
 from .views import *
 from dark_fream.urls import path
@@ -120,4 +129,4 @@ urlpatterns = [
 ## Предупреждаю!
 ## После любых изменений несчитая шаблонов нужно перезапускать сервер
 
-##### Версия 3
+##### Версия 4

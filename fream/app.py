@@ -88,7 +88,7 @@ def create_app(app_name):
             f.write(f"""
 MESSAGES = True
 APPS = [
-    '{app_name},'
+    '{app_name}',
 ]""")
 
     with open(f'{app_name}/views.py', 'w', encoding='utf8') as f:

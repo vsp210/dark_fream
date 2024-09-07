@@ -11,6 +11,7 @@ except ModuleNotFoundError:
     pass
 from winotify import Notification
 
+urlpatterns = []
 
 try:
     for app in APPS:
@@ -18,12 +19,15 @@ try:
         globals().update({name: getattr(views_module, name) for name in dir(views_module) if not name.startswith('_')})
 
         urls_module = __import__(f'{app}.urls', fromlist=['*'])
-        urlpatterns = getattr(urls_module, 'urlpatterns')
-except NameError:
-    urlpatterns = []
+        urlpattern = getattr(urls_module, 'urlpatterns')
+        for pattern in urlpattern:
+            urlpatterns.append({'path': pattern['path'], 'view': pattern['view']})
+    print(urlpatterns)
+except ModuleNotFoundError:
+    pass
 
 def messages(app_id, title, msg):
-    icon_path = os.path.join(os.path.dirname(__file__), 'fream/icon.png')
+    icon_path = os.path.join(os.path.dirname(__file__), 'dark_fream/icon.png')
     return Notification(app_id, title, msg, icon_path)
 
 
@@ -34,51 +38,65 @@ class MyApp(BaseHTTPRequestHandler):
                 self.send_response(200)
                 self.send_header("Content-type", "text/html")
                 self.end_headers()
-                self.wfile.write(render(self, 'index.html', templates='fream/templates').encode('utf-8'))
+                self.wfile.write(render(self, 'index.html', templates='dark_fream/templates').encode('utf-8'))
                 return
             else:
                 self.send_response(404)
                 self.send_header("Content-type", "text/html")
                 self.end_headers()
-                self.wfile.write(render(self, '404.html', templates='fream/templates').encode('utf-8'))
+                self.wfile.write(render(self, '404.html', templates='dark_fream/templates').encode('utf-8'))
                 return
 
-        for url_pattern in urlpatterns:
-            if self.path.startswith(url_pattern['path']):
+        def handle_response(self, response):
+            if isinstance(response, dict) and 'status_code' in response:
+                self.send_response(response['status_code'])
+                for header, value in response.get('headers', {}).items():
+                    self.send_header(header, value)
+                self.end_headers()
+            else:
+                self.send_response(200)
+                self.send_header("Content-type", "text/html")
+                self.end_headers()
+                self.wfile.write(response.encode('utf-8'))
+
+        def handle_404(self):
+            self.send_response(404)
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
+            self.wfile.write(render(self, '404.html', templates='dark_fream/templates').encode('utf-8'))
+
+        for url_pattern in reversed(urlpatterns):
+            if self.path == url_pattern['path']:
                 response = url_pattern['view'](self)
                 if response is not None:
-                    if isinstance(response, dict) and 'status_code' in response:
-                        self.send_response(response['status_code'])
-                        for header, value in response.get('headers', {}).items():
-                            self.send_header(header, value)
-                        self.end_headers()
-                    else:
-                        self.send_response(200)
-                        self.send_header("Content-type", "text/html")
-                        self.end_headers()
-                        self.wfile.write(response.encode('utf-8'))
+                    handle_response(self, response)
                     return
-        self.send_response(404)
-        self.send_header("Content-type", "text/html")
-        self.end_headers()
-        self.wfile.write(render(self, '404.html', templates='fream/templates/404.html').encode('utf-8'))
+
+        handle_404(self)
         return
 
 
 
 
+
 def run_server(port=8000, address='127.0.0.1'):
-    server_address = (address, int(port))
-    httpd = HTTPServer(server_address, MyApp)
     try:
-        if MESSAGES:
-            toast = messages('Dark Fream', 'started', 'Server started on port 8000')
-            toast.show()
-    except NameError:
-        print('App is not defined')
-    print("Starting server...")
-    print(f'Server running on http://{address}:{port}/')
-    httpd.serve_forever()
+        server_address = (address, int(port))
+        httpd = HTTPServer(server_address, MyApp)
+        try:
+            if MESSAGES:
+                toast = messages('Dark Fream', 'started', 'Server started on port 8000')
+                toast.show()
+        except NameError:
+            print('App is not defined')
+        print("Starting server...")
+        print(f'Server running on http://{address}:{port}/')
+        httpd.serve_forever()
+    except KeyboardInterrupt:
+        print("\nServer stopped by user")
+        exit()
+    except ConnectionAbortedError:
+        print("\n")
 
 def create_app(app_name):
     os.mkdir(app_name)

@@ -3,15 +3,15 @@ from dark_fream.template import LazyImport
 
 def path(path, view, name=None):
     """
-    Возвращает словарь, содержащий информацию о маршруте.
+    Returns a dictionary containing information about the route.
 
     Args:
-        path (str): Путь URL-адреса.
-        view (function): Функция, обрабатывающая запрос к этому пути.
-        name (str, optional): Имя маршрута. Defaults to None.
+        path (str): Path URL-адреса.
+        view (function): The function that handles the request to this path.
+        name (str, optional): Route name. Defaults to None.
 
     Returns:
-        dict: Словарь с ключами 'path', 'view' и 'name'.
+        dict: Dictionary with keys 'path', 'view' and 'name'.
 
     Example:
         >>> path('/home', my_view, 'home_page')
@@ -26,13 +26,13 @@ def path(path, view, name=None):
 
 def include(path_url):
     """
-    Возвращает список маршрутов, определенных в модуле, указанном в path_url.
+    Returns a list of routes defined in the module specified in path_url.
 
     Args:
-        path_url (str): Путь к модулю, содержащему маршруты.
+        path_url (str): Path to the module containing routes.
 
     Returns:
-        list: Список маршрутов, определенных в модуле.
+        list: List of routes defined in the module.
 
     Example:
         >>> include('myapp.urls')
@@ -40,4 +40,5 @@ def include(path_url):
          {'path': '/about', 'view': about_view, 'name': 'about_page'}]
     """
     urlpatterns = LazyImport(f'{path_url}', 'urlpatterns')
+    print(urlpatterns)
     return urlpatterns

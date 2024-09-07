@@ -49,12 +49,12 @@
         langSwitcherBtn.addEventListener('click', () => {
             if (lang === 'en') {
                 lang = 'ru';
-                langSwitcherBtn.textContent = 'Перевести';
+                langSwitcherBtn.textContent = 'TranslateПеревести';
                 errorTitle.textContent = 'Ошибка 404 - страница не найдена';
                 errorMessage.textContent = 'К сожалению, запрашиваемая страница не существует. Пожалуйста, проверьте адрес и повторите запрос.';
             } else {
                 lang = 'en';
-                langSwitcherBtn.textContent = 'Translate';
+                langSwitcherBtn.textContent = 'Перевести';
                 errorTitle.textContent = '404 Error - Page Not Found';
                 errorMessage.textContent = 'Sorry, the requested page does not exist. Please check the address and try again.';
             }

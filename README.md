@@ -94,7 +94,7 @@ from dark_fream.urls import path, include
 
 urlpatterns = [
     # ваши urls
-    path('', include('**.urls')),
+    include('**.urls'),
 ]
 ~~~
 - dark_fream/**/urls.py:
@@ -129,4 +129,4 @@ urlpatterns = [
 ## Предупреждаю!
 ## После любых изменений несчитая шаблонов нужно перезапускать сервер
 
-##### Версия 4
+##### Версия 4 (Beta)

@@ -2,7 +2,7 @@ import sys
 import os
 import sys
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from fream.template import render
+from dark_fream.template import render
 import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 try:

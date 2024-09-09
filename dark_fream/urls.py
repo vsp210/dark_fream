@@ -40,5 +40,4 @@ def include(path_url):
          {'path': '/about', 'view': about_view, 'name': 'about_page'}]
     """
     urlpatterns = LazyImport(f'{path_url}', 'urlpatterns')
-    print(urlpatterns)
     return urlpatterns

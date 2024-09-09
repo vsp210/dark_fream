@@ -16,6 +16,7 @@ dark_fream - это фреймворк который позволяет соз�
 + **Работа с шаблонами** - Работа с шаблонами похожая с Django например:
 - **render** (рендерит шаблон)
 - **redirect** (изменяет ваш url)
+- **global_instance** (поможет сохранять данные глобально)
 
 + **Работа с url** - тут всё также как и в джанго например:
 - **path** (создает url)
@@ -52,7 +53,7 @@ python -m dark_fream.app runserver
 ~~~bash
 python -m dark_fream.app runserver <adress> <port>
 ~~~
-
+- adress и port - необезательны
 ### Контакты
 - **ВКонтакте**: https://vk.com/vsp210
 - **Телеграм**: https://t.me/vsp210
@@ -60,33 +61,7 @@ python -m dark_fream.app runserver <adress> <port>
 
 ### dark_fream - Мой собственный фреймворк основаный на всеми известном Django с открытым исходным кодом
 
-### Пример использования:
-
-- dark_fream/**/models.py:
-~~~python
-from dark_fream.models import *
-
-
-# ваша модель
-class User(Model):
-    user = CharField()
-    password = CharField()
-    phone = CharField()
-~~~
-
-- dark_fream/**/views.py:
-~~~python
-from .models import *
-from dark_fream.template import render
-
-# ваш код
-def home(request):
-    User.create_table()
-    user = User(user='vsp210', password='1234', phone='8 888 888 88 88')
-    user.save()
-    return render(request, 'home.html')
-
-~~~
+### Пример создания простого калькулятора:
 
 - dark_fream/settings/urls.py:
 ~~~python
@@ -97,15 +72,38 @@ urlpatterns = [
     include('**.urls'),
 ]
 ~~~
+
+- dark_fream/**/views.py:
+~~~python
+from .models import *
+from dark_fream.template import render, global_instance, redirect
+
+# ваш код
+
+def home(request):
+    if request.method == 'POST':
+        data = request.data
+        global_instance.add('data', data)
+        return redirect('clac')
+    return render(request, 'home.html', {'text': 'Hello'})
+
+
+def clac(request):
+    data = global_instance.get('data')
+    return render(request, 'home.html', {'text': eval(data['number1'] + data['operation'] + data['number2'])})
+~~~
+
 - dark_fream/**/urls.py:
 ~~~python
+from dark_fream.urls import *
 from .views import *
-from dark_fream.urls import path
 
 urlpatterns = [
     # ваши urls
-    path('', home, name='home'),
+    path('', home),
+    path('clac', clac, name='clac')
 ]
+
 ~~~
 - dark_fream/templates/home.html:
 ~~~html
@@ -113,20 +111,43 @@ urlpatterns = [
 <html>
     <head>
         <title>Home</title>
+        <meta charset="UTF-8"> <-- Рекомендую использовать эту строчку для избежания ошибки кодировки -->
     </head>
     <body>
-        <h1>Home</h1>
+        <form method="post" action="{{ url('') }}">
+            <label for="name">Первое число:</label>
+            <input type="number" id="number1" name="number1"><br><br>
+            <label for="name">Второе число:</label>
+            <input type="number" id="number2" name="number2"><br><br>
+            <label for="name">Операция:</label>
+            <select id="operation" name="operation">
+            <option value="+">+</option>
+            <option value="-">-</option>
+            <option value="*">*</option>
+            <option value="/">/</option>
+            </select>
+            <input type="submit" value="Submit">
+        </form>
+        <h1>{{ text }}</h1>
     </body>
 </html>
 ~~~
 
 ### Пояснение:
-В этом примере мы создали базовую структуру приложения DarkFream с базой данных и моделью User
-Мы также добавили функцию home в views.py, которая создает нового пользователя и сохраняет его после каждой перезагрузки
-В urls.py мы добавили url для функции home
-В home.html мы добавили простую HTML-страницу с заголовком "Home"
+В этом примере мы создали пример калькулятора
+- dark_fream/settings/urls.py:
+В этом фаиле мы указываем где надо искать urlpatterns
+- dark_fream/**/views.py:
+В этом файле мы создаем функцию home, которая будет обрабатывать GET и POST запросы с условием если запрос POST то переходить на страницу calc а также сохраняет данные которые передавались из шаблона. Затем функция calc с помошью функции eval (встроеной в пайтон) считает и отправляет результат
+- dark_fream/**/urls.py:
+В этом файле мы указываем urlpatterns
+- dark_fream/templates/home.html:
+В этом файле мы создаем форму которая будет отправлять POST запросы на страницу сalc и выводить результат на страницу home.
+### Примечание:
+В этом примере мы использовали функцию eval, которая может быть опасной, если вы не уверены в безопасности своего кода, то лучше использовать библиотеку math. В этом примере мы использовали функцию eval, потому что она позволяет выполнять любые математические операции. Если вы хотите использовать библиотеку math, то вы должны заменить функцию eval на функцию math.
+
 
 ## Предупреждаю!
 ## После любых изменений несчитая шаблонов нужно перезапускать сервер
 
-##### Версия 4 (Beta)
+##### Версия 1 (release)

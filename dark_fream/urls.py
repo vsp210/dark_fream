@@ -9,20 +9,20 @@ def path(path, view, name=None):
         path (str): Path URL-адреса.
         view (function): The function that handles the request to this path.
         name (str, optional): Route name. Defaults to None.
+        methods (list, optional): List of HTTP methods supported by the route. Defaults to None.
 
     Returns:
-        dict: Dictionary with keys 'path', 'view' and 'name'.
+        dict: Dictionary with keys 'path', 'view', 'name' and 'methods'.
 
     Example:
         >>> path('/home', my_view, 'home_page')
-        {'path': '/home', 'view': my_view, 'name': 'home_page'}
-        >>> path('', my_view)
-        {'path': '', 'view': my_view, 'name': None}
+        {'path': '/home', 'view': my_view, 'name': 'home_page', 'methods': None}
+        >>> path('', my_view, methods=['GET', 'POST'])
+        {'path': '', 'view': my_view, 'methods': ['GET', 'POST']}
     """
     if not path.startswith('/'):
         path = '/' + path
     return {'path': path, 'view': view, 'name': name}
-
 
 def include(path_url):
     """

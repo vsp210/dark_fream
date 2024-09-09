@@ -1,6 +1,8 @@
+import html
 import sys
 import os
 import sys
+import urllib.parse
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from dark_fream.template import render
 import sys
@@ -31,7 +33,35 @@ def messages(app_id, title, msg):
     return Notification(app_id, title, msg, icon_path)
 
 
+class Request:
+    def __init__(self, method, path, data, headers=None, kwargs=None):
+        self.method = method
+        self.path = path
+        self.data = data
+        self.headers = headers
+        self.kwargs = kwargs
+
 class MyApp(BaseHTTPRequestHandler):
+    def handle_response(self, response):
+        if isinstance(response, dict) and 'status_code' in response:
+            self.send_response(response['status_code'])
+            for header, value in response.get('headers', {}).items():
+                self.send_header(header, value)
+            self.end_headers()
+        else:
+            self.send_response(200)
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
+            self.wfile.write(response.encode('utf-8'))
+
+
+    def handle_404(self):
+        self.send_response(404)
+        self.send_header("Content-type", "text/html")
+        self.end_headers()
+        self.wfile.write(render(self, '404.html', templates='dark_fream/templates').encode('utf-8'))
+
+
     def do_GET(self):
         if not urlpatterns:
             if self.path == '/':
@@ -46,35 +76,54 @@ class MyApp(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(render(self, '404.html', templates='dark_fream/templates').encode('utf-8'))
                 return
+        post_data = ''
 
-        def handle_response(self, response):
-            if isinstance(response, dict) and 'status_code' in response:
-                self.send_response(response['status_code'])
-                for header, value in response.get('headers', {}).items():
-                    self.send_header(header, value)
-                self.end_headers()
-            else:
-                self.send_response(200)
-                self.send_header("Content-type", "text/html")
-                self.end_headers()
-                self.wfile.write(response.encode('utf-8'))
-
-        def handle_404(self):
-            self.send_response(404)
-            self.send_header("Content-type", "text/html")
-            self.end_headers()
-            self.wfile.write(render(self, '404.html', templates='dark_fream/templates').encode('utf-8'))
+        request = Request(
+            method=self.command,
+            path=self.path,
+            data=post_data,
+            headers=self.headers
+        )
 
         for url_pattern in reversed(urlpatterns):
             if self.path == url_pattern['path']:
-                response = url_pattern['view'](self)
+                response = url_pattern['view'](request)
                 if response is not None:
-                    handle_response(self, response)
+                    self.handle_response(response)
                     return
 
-        handle_404(self)
+        self.handle_404()
         return
 
+
+    def do_POST(self):
+        if not urlpatterns:
+            self.send_response(405)
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
+            self.wfile.write(b"Method Not Allowed")
+            return
+
+        content_length = int(self.headers['Content-Length'])
+        post_data_bytes = self.rfile.read(content_length)
+        post_data = {key: html.unescape(value[0]) for key, value in urllib.parse.parse_qs(post_data_bytes.decode('utf-8')).items()}
+        kwargs = {key: value for key, value in post_data.items() if key not in ['csrfmiddlewaretoken']}
+        request = Request(
+            method=self.command,
+            path=self.path,
+            data=post_data,
+            kwargs=kwargs,
+            headers=self.headers
+        )
+        for url_pattern in reversed(urlpatterns):
+            if self.path == url_pattern['path']:
+                response = url_pattern['view'](request)
+                if response is not None:
+                    self.handle_response(response)
+                    return
+
+        self.handle_404()
+        return
 
 
 

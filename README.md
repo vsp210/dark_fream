@@ -77,6 +77,7 @@ urlpatterns = [
 ~~~python
 from .models import *
 from dark_fream.template import render, global_instance, redirect
+from dark_fream.functions.math import calculator
 
 # ваш код
 
@@ -90,7 +91,11 @@ def home(request):
 
 def clac(request):
     data = global_instance.get('data')
-    return render(request, 'home.html', {'text': eval(data['number1'] + data['operation'] + data['number2'])})
+    if 'number1' in data and 'operation' in data and 'number2' in data:
+        result = calculator(f"{data['number1']} {data['operation']} {data['number2']}")
+        return render(request, 'home.html', {'text': result})
+    else:
+        return render(request, 'home.html', {'text': 'Invalid input data'})
 ~~~
 
 - dark_fream/**/urls.py:
@@ -138,13 +143,13 @@ urlpatterns = [
 - dark_fream/settings/urls.py:
 В этом фаиле мы указываем где надо искать urlpatterns
 - dark_fream/**/views.py:
-В этом файле мы создаем функцию home, которая будет обрабатывать GET и POST запросы с условием если запрос POST то переходить на страницу calc а также сохраняет данные которые передавались из шаблона. Затем функция calc с помошью функции eval (встроеной в пайтон) считает и отправляет результат
+В этом файле мы создаем функцию home, которая будет обрабатывать GET и POST запросы с условием если запрос POST то переходить на страницу calc а также сохраняет данные которые передавались из шаблона. Затем функция calc с помошью функции calculator (встроеной в dark_fream) считает и отправляет результат
 - dark_fream/**/urls.py:
 В этом файле мы указываем urlpatterns
 - dark_fream/templates/home.html:
 В этом файле мы создаем форму которая будет отправлять POST запросы на страницу сalc и выводить результат на страницу home.
 ### Примечание:
-В этом примере мы использовали функцию eval, которая может быть опасной, если вы не уверены в безопасности своего кода, то лучше использовать библиотеку math. В этом примере мы использовали функцию eval, потому что она позволяет выполнять любые математические операции. Если вы хотите использовать библиотеку math, то вы должны заменить функцию eval на функцию math.
+В этом примере мы использовали функцию calculator которая встроеная в dark_fream.
 
 
 ## Предупреждаю!

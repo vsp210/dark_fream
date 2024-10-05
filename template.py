@@ -2,10 +2,8 @@ import os
 import sys
 from jinja2 import Environment, FileSystemLoader
 
-try:
-    from settings.settings import *
-except ModuleNotFoundError:
-    pass
+from dark_fream.utils import get_settings
+
 
 class LazyImport:
     """
@@ -48,7 +46,7 @@ class Global:
 global_instance = Global()
 
 try:
-    for app in APPS:
+    for app in get_settings('APPS'):
         urlpatterns = LazyImport(f'{app}.urls', 'urlpatterns')
 except NameError:
     urlpatterns = []

@@ -6,17 +6,15 @@ import urllib.parse
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from dark_fream.template import render
 import sys
+
+from dark_fream.utils import get_settings
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
-try:
-    from settings.settings import *
-except ModuleNotFoundError:
-    pass
 from winotify import Notification
 
 urlpatterns = []
 
 try:
-    for app in APPS:
+    for app in get_settings('APPS'):
         views_module = __import__(f'{app}.views', fromlist=['*'])
         globals().update({name: getattr(views_module, name) for name in dir(views_module) if not name.startswith('_')})
 
@@ -24,13 +22,13 @@ try:
         urlpattern = getattr(urls_module, 'urlpatterns')
         for pattern in urlpattern:
             urlpatterns.append({'path': pattern['path'], 'view': pattern['view']})
-    print(urlpatterns)
 except ModuleNotFoundError:
     pass
+except NameError:
+    urlpatterns = []
 
 def messages(app_id, title, msg):
-    icon_path = os.path.join(os.path.dirname(__file__), 'dark_fream/icon.png')
-    return Notification(app_id, title, msg, icon_path)
+    return Notification(app_id, title, msg)
 
 
 class Request:
@@ -133,7 +131,7 @@ def run_server(port=8000, address='127.0.0.1'):
         server_address = (address, int(port))
         httpd = HTTPServer(server_address, MyApp)
         try:
-            if MESSAGES:
+            if get_settings('MESSAGES'):
                 toast = messages('Dark Fream', 'started', 'Server started on port 8000')
                 toast.show()
         except NameError:
